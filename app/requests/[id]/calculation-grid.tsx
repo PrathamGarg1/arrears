@@ -30,6 +30,7 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
 
   // Calculate Aggregates
   const totalArrear = segments.reduce((sum, seg) => sum + (seg.totalDue - seg.totalDrawn), 0)
+  const monthlyDiffSum = segments.reduce((sum, seg) => sum + (seg.monthlyDueTotal - seg.drawnTotal), 0)
 
   return (
     <div>
@@ -117,6 +118,12 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
             ))}
           </tbody>
           <tfoot className="bg-slate-50 font-bold border-t border-slate-200 text-sm sticky bottom-0 z-10 shadow-[0_-1px_2px_rgba(0,0,0,0.05)]">
+            <tr>
+              <td colSpan={13} className="px-4 py-3 text-right uppercase text-xs text-slate-500 font-bold tracking-wider">Monthly Difference Payable Sum:</td>
+              <td className="px-4 py-3 text-right text-slate-900 border-l border-slate-200 bg-slate-100">
+                ₹ {monthlyDiffSum.toLocaleString()}
+              </td>
+            </tr>
             <tr>
               <td colSpan={13} className="px-4 py-3 text-right uppercase text-xs text-slate-500 font-bold tracking-wider">Net Arrear Payable:</td>
               <td className="px-4 py-3 text-right text-slate-900 border-l border-slate-200 bg-emerald-50/50">
