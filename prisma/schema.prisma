@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   // CLERK, JR_ASSISTANT, SR_ASSISTANT, SUPERINTENDENT, AO
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  requestsInitiated ArrearRequest[] @relation("Initiator")
+  logs              AuditLog[]
+}
+
+model DARate {
+  id            String   @id @default(cuid())
+  effectiveDate DateTime
+  percentage    Float
+  type          String   @default("REVISED") // REVISED (7th CPC), PRE_REVISED (6th CPC)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([effectiveDate, type]) // effectiveDate is not unique alone anymore
+}
+
+model ArrearRequest {
+  id             String   @id @default(cuid())
+  employeeId     String
+  employeeName   String?
+  startDate      DateTime
+  endDate        DateTime
+  status         String   @default("DRAFT") // DRAFT, PENDING_CALC, PENDING_BUDGET, PENDING_APPROVAL, APPROVED, REJECTED
+  
+  initiatorId    String
+  initiator      User     @relation("Initiator", fields: [initiatorId], references: [id])
+  
+  payEvents      PayEvent[]
+  auditLogs      AuditLog[]
+  
+  calculationResult String? // JSON string of the detailed calculation grid
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model PayEvent {
+  id          String        @id @default(cuid())
+  date        DateTime
+  type        String        // PROMOTION, ANNUAL_INCREMENT, REVISION, ARREAR_INSTALLMENT
+  
+  // DUE (Revised Pay)
+  basicPay    Float         // 7th CPC Basic
+  
+  // DRAWN (Old Pay structure)
+  drawnBasicPay Float?      // 6th CPC Band Pay
+  drawnGradePay Float?      // 6th CPC Grade Pay
+  drawnIR       Float?      // Interim Relief
+  
+  requestId   String
+  request     ArrearRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model AuditLog {
+  id          String        @id @default(cuid())
+  action      String
+  comments    String?
+  
+  requestId   String
+  request     ArrearRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  
+  performedById String
+  performedBy   User          @relation(fields: [performedById], references: [id])
+  
+  createdAt   DateTime      @default(now())
+}
