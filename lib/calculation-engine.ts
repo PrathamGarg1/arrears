@@ -96,7 +96,16 @@ export function calculateArrears(req: CalculationRequest): Segment[] {
         const basicPay = activePayEvent ? activePayEvent.basicPay : 0
         const drawnBP = activePayEvent?.drawnBasicPay || 0
         const drawnGP = activePayEvent?.drawnGradePay || 0
-        const drawnIR = activePayEvent?.drawnIR || 0
+
+        // Auto-calculate 5% IR for drawn side from 1.1.2017 onwards
+        const irStartDate = new Date('2017-01-01')
+        let drawnIR = activePayEvent?.drawnIR || 0
+        if (isBefore(segStart, irStartDate) || isSameDay(segStart, irStartDate)) {
+            // From 1.1.2017 onwards, IR = 5% of (Basic + Grade Pay)
+            if (!isBefore(segStart, irStartDate)) {
+                drawnIR = Math.round((drawnBP + drawnGP) * 0.05)
+            }
+        }
 
         // Find DA Rates
         const activeRevDA = revisedDARates

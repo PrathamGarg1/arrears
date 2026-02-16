@@ -30,7 +30,11 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
 
   // Calculate Aggregates
   const totalArrear = segments.reduce((sum, seg) => sum + (seg.totalDue - seg.totalDrawn), 0)
-  const monthlyDiffSum = segments.reduce((sum, seg) => sum + (seg.monthlyDueTotal - seg.drawnTotal), 0)
+  
+  // Calculate Year 2016 Total
+  const year2016Total = segments
+    .filter(seg => new Date(seg.startDate).getFullYear() === 2016)
+    .reduce((sum, seg) => sum + (seg.totalDue - seg.totalDrawn), 0)
 
   return (
     <div>
@@ -42,9 +46,9 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
             <tr>
               <th className="border-b border-r border-slate-200 px-3 py-2 sticky left-0 z-20 bg-slate-50 text-left text-slate-500 font-semibold w-[160px]">Period</th>
               <th className="border-b border-slate-200 px-2 py-1 font-semibold text-slate-500 bg-slate-50 sticky left-[160px] z-20 w-[100px]">Duration</th>
-              <th colSpan={5} className="border-b border-r border-slate-200 px-2 py-2 font-bold text-slate-700 bg-slate-50/50">DUE (Revised)</th>
-              <th colSpan={6} className="border-b border-r border-slate-200 px-2 py-2 font-bold text-slate-700 bg-slate-50/50">DRAWN (Old)</th>
-              <th colSpan={3} className="border-b border-slate-200 px-2 py-2 font-bold text-slate-900 bg-slate-100">NET ARREAR</th>
+              <th colSpan={4} className="border-b border-r border-slate-200 px-2 py-2 font-bold text-slate-700 bg-slate-50/50">DUE (Revised)</th>
+              <th colSpan={5} className="border-b border-r border-slate-200 px-2 py-2 font-bold text-slate-700 bg-slate-50/50">DRAWN (Old)</th>
+              <th className="border-b border-slate-200 px-2 py-2 font-bold text-slate-900 bg-slate-100">NET ARREAR</th>
             </tr>
             {/* Header Row 2: Columns */}
             <tr>
@@ -55,20 +59,16 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">DA%</th>
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">Basic</th>
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">DA Amt</th>
-              <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">HRA</th>
-              <th className="border-b border-r border-slate-200 px-2 py-2 text-right text-[10px] text-slate-600 font-bold bg-slate-50/30">Total Due</th>
+              <th className="border-b border-r border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">HRA</th>
 
               {/* DRAWN Columns */}
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">DA%</th>
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">Basic</th>
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">G.Pay</th>
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">IR</th>
-              <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">DA Amt</th>
-              <th className="border-b border-r border-slate-200 px-2 py-2 text-right text-[10px] text-slate-600 font-bold bg-slate-50/30">Total Drawn</th>
+              <th className="border-b border-r border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">DA Amt</th>
               
-              {/* DIFF Columns */}
-              <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">Monthly Diff</th>
-              <th className="border-b border-r border-slate-200 px-2 py-2 text-right text-[10px] text-slate-400 font-medium">Factor</th>
+              {/* NET Payable */}
               <th className="border-b border-slate-200 px-2 py-2 text-right text-[10px] text-slate-800 font-bold bg-slate-100">Net Payable</th>
             </tr>
           </thead>
@@ -86,28 +86,16 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
                 <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.daPercentage}%</td>
                 <td className="px-2 py-2 text-right text-slate-900 font-medium font-mono">{seg.basicPay}</td>
                 <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.daRate}</td>
-                <td className="px-2 py-2 text-right text-slate-300 font-mono">-</td>
-                <td className="border-r border-slate-100 px-2 py-2 text-right font-medium text-slate-700 bg-slate-50/30 font-mono">
-                  {seg.monthlyDueTotal}
-                </td>
+                <td className="border-r border-slate-100 px-2 py-2 text-right text-slate-300 font-mono">-</td>
 
                 {/* DRAWN */}
                 <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.drawnDAPercentage}%</td>
                 <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.drawnBasicPay}</td>
                 <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.drawnGradePay}</td>
                 <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.drawnIR}</td>
-                <td className="px-2 py-2 text-right text-slate-500 font-mono">{seg.drawnDA}</td>
-                <td className="border-r border-slate-100 px-2 py-2 text-right font-medium text-slate-700 bg-slate-50/30 font-mono">
-                  {seg.drawnTotal}
-                </td>
+                <td className="border-r border-slate-100 px-2 py-2 text-right text-slate-500 font-mono">{seg.drawnDA}</td>
 
-                {/* DIFF & TOTAL */}
-                <td className="px-2 py-2 text-right text-slate-400 font-mono">
-                   {seg.monthlyDueTotal - seg.drawnTotal}
-                </td>
-                <td className="border-r border-slate-100 px-2 py-2 text-right text-slate-400 text-[10px] font-mono">
-                   {/* Factor */}
-                </td>
+                {/* NET PAYABLE */}
                 <td className={cn(
                   "px-2 py-2 text-right font-bold font-mono bg-slate-50",
                   Math.round(seg.totalDue - seg.totalDrawn) >= 0 ? "text-emerald-600" : "text-red-500"
@@ -118,14 +106,16 @@ export default function CalculationGrid({ request, payEvents, daRates }: Calcula
             ))}
           </tbody>
           <tfoot className="bg-slate-50 font-bold border-t border-slate-200 text-sm sticky bottom-0 z-10 shadow-[0_-1px_2px_rgba(0,0,0,0.05)]">
+            {year2016Total > 0 && (
+              <tr>
+                <td colSpan={10} className="px-4 py-3 text-right uppercase text-xs text-slate-500 font-bold tracking-wider">Arrear for the year 2016:</td>
+                <td className="px-4 py-3 text-right text-slate-900 border-l border-slate-200 bg-blue-50/50">
+                  ₹ {year2016Total.toLocaleString()}
+                </td>
+              </tr>
+            )}
             <tr>
-              <td colSpan={13} className="px-4 py-3 text-right uppercase text-xs text-slate-500 font-bold tracking-wider">Monthly Difference Payable Sum:</td>
-              <td className="px-4 py-3 text-right text-slate-900 border-l border-slate-200 bg-slate-100">
-                ₹ {monthlyDiffSum.toLocaleString()}
-              </td>
-            </tr>
-            <tr>
-              <td colSpan={13} className="px-4 py-3 text-right uppercase text-xs text-slate-500 font-bold tracking-wider">Net Arrear Payable:</td>
+              <td colSpan={10} className="px-4 py-3 text-right uppercase text-xs text-slate-500 font-bold tracking-wider">Net Arrear Payable:</td>
               <td className="px-4 py-3 text-right text-slate-900 border-l border-slate-200 bg-emerald-50/50">
                 ₹ {totalArrear.toLocaleString()}
               </td>

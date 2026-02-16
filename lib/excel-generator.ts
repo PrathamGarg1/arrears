@@ -20,6 +20,11 @@ export const generateExcel = ({
     totalArrear,
     status
 }: ExcelExportData) => {
+    // Calculate Year 2016 Total
+    const year2016Total = segments
+        .filter((seg: any) => new Date(seg.startDate).getFullYear() === 2016)
+        .reduce((sum: number, seg: any) => sum + (seg.totalDue - seg.totalDrawn), 0)
+
     // Create a new workbook
     const wb = XLSX.utils.book_new();
 
@@ -54,16 +59,13 @@ export const generateExcel = ({
         'Basic Pay',
         'DA Amount',
         'HRA',
-        'Total Due',
         // DRAWN (Old)
         'DA%',
         'Basic Pay',
         'Grade Pay',
         'IR',
         'DA Amount',
-        'Total Drawn',
         // NET
-        'Monthly Diff',
         'Net Payable'
     ];
 
@@ -75,20 +77,27 @@ export const generateExcel = ({
         seg.basicPay,
         seg.daRate,
         '-',
-        seg.monthlyDueTotal,
         // DRAWN
         `${seg.drawnDAPercentage}%`,
         seg.drawnBasicPay,
         seg.drawnGradePay,
         seg.drawnIR,
         seg.drawnDA,
-        seg.drawnTotal,
         // NET
-        seg.monthlyDueTotal - seg.drawnTotal,
         Math.round(seg.totalDue - seg.totalDrawn)
     ]);
 
     // Add header and data
+    const footerRows = [];
+
+    // Add year 2016 total if applicable
+    if (year2016Total > 0) {
+        footerRows.push(['', '', '', '', '', '', '', '', '', '', 'ARREAR FOR THE YEAR 2016:', `₹${year2016Total.toLocaleString()}`]);
+    }
+
+    // Add total arrear
+    footerRows.push(['', '', '', '', '', '', '', '', '', '', 'TOTAL ARREAR PAYABLE:', `₹${totalArrear.toLocaleString()}`]);
+
     const wsGrid = XLSX.utils.aoa_to_sheet([
         ['BBMB ARREAR CALCULATION GRID'],
         [`Employee: ${employeeName} (${employeeId})`],
@@ -97,7 +106,7 @@ export const generateExcel = ({
         gridHeaders,
         ...gridData,
         [],
-        ['', '', '', '', '', '', '', '', '', '', '', '', 'TOTAL ARREAR PAYABLE:', `₹${totalArrear.toLocaleString()}`]
+        ...footerRows
     ]);
 
     // Set column widths
@@ -108,14 +117,11 @@ export const generateExcel = ({
         { wch: 12 }, // Basic
         { wch: 12 }, // DA Amt
         { wch: 8 },  // HRA
-        { wch: 12 }, // Total Due
         { wch: 8 },  // DA%
         { wch: 12 }, // Basic
         { wch: 12 }, // GP
         { wch: 8 },  // IR
         { wch: 12 }, // DA Amt
-        { wch: 12 }, // Total Drawn
-        { wch: 12 }, // Monthly Diff
         { wch: 14 }  // Net Payable
     ];
 
