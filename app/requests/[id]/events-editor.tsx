@@ -27,8 +27,7 @@ export default function PayEventsEditor({ requestId, initialEvents }: { requestI
   const [defaults, setDefaults] = useState({
       basicPay: '',
       drawnBasicPay: '',
-      drawnGradePay: '',
-      drawnIR: ''
+      drawnGradePay: ''
   })
 
   function fillFromLast() {
@@ -36,8 +35,7 @@ export default function PayEventsEditor({ requestId, initialEvents }: { requestI
       setDefaults({
           basicPay: String(lastEvent.basicPay),
           drawnBasicPay: String(lastEvent.drawnBasicPay || ''),
-          drawnGradePay: String(lastEvent.drawnGradePay || ''),
-          drawnIR: String(lastEvent.drawnIR || '')
+          drawnGradePay: String(lastEvent.drawnGradePay || '')
       })
       
       // Also update standard form inputs manually if refs needed, but React key change forces reload or value prop
@@ -63,7 +61,7 @@ export default function PayEventsEditor({ requestId, initialEvents }: { requestI
                     </div>
                     <div className="bg-yellow-50 p-2 rounded border border-yellow-100">
                         <span className="text-yellow-800 font-bold block mb-1">DRAWN (Old)</span> 
-                        BP {event.drawnBasicPay} + GP {event.drawnGradePay} + IR {event.drawnIR}
+                        BP {event.drawnBasicPay} + GP {event.drawnGradePay} (IR auto-calculated)
                     </div>
                 </div>
               </div>
@@ -101,7 +99,7 @@ export default function PayEventsEditor({ requestId, initialEvents }: { requestI
             action={async (formData) => {
                 await addPayEvent(formData)
                 formRef.current?.reset()
-                setDefaults({ basicPay: '', drawnBasicPay: '', drawnGradePay: '', drawnIR: ''})
+                setDefaults({ basicPay: '', drawnBasicPay: '', drawnGradePay: ''})
             }} 
             className="space-y-4"
           >
@@ -136,22 +134,17 @@ export default function PayEventsEditor({ requestId, initialEvents }: { requestI
                 {/* DRAWN SECTION */}
                 <div className="col-span-1 bg-white p-3 rounded border border-yellow-200 relative">
                      <span className="absolute -top-2 left-2 bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Drawn (Old)</span>
-                    <div className="space-y-2 mt-2">
                         <div>
                           <label className="block text-[10px] font-medium text-gray-500">Basic Pay</label>
                           <input type="number" name="drawnBasicPay" defaultValue={defaults.drawnBasicPay} placeholder="BP" className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 p-1.5 border" />
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="block text-[10px] font-medium text-gray-500">Grade Pay</label>
-                              <input type="number" name="drawnGradePay" defaultValue={defaults.drawnGradePay} placeholder="GP" className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 p-1.5 border" />
-                            </div>
-                            <div>
-                              <label className="block text-[10px] font-medium text-gray-500">IR</label>
-                              <input type="number" name="drawnIR" defaultValue={defaults.drawnIR} placeholder="IR" className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 p-1.5 border" />
-                            </div>
+                        <div>
+                          <label className="block text-[10px] font-medium text-gray-500">Grade Pay</label>
+                          <input type="number" name="drawnGradePay" defaultValue={defaults.drawnGradePay} placeholder="GP" className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 p-1.5 border" />
                         </div>
-                    </div>
+                        <div className="col-span-2">
+                          <p className="text-[10px] text-gray-500 italic mt-1">IR is auto-calculated (5% from 1.1.2017)</p>
+                        </div>
                 </div>
             </div>
 

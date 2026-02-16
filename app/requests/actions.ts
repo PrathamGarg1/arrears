@@ -14,7 +14,7 @@ export async function addPayEvent(formData: FormData) {
     // Drawn Fields (Optional)
     const drawnBasicPay = formData.get('drawnBasicPay') ? parseFloat(formData.get('drawnBasicPay') as string) : null
     const drawnGradePay = formData.get('drawnGradePay') ? parseFloat(formData.get('drawnGradePay') as string) : null
-    const drawnIR = formData.get('drawnIR') ? parseFloat(formData.get('drawnIR') as string) : null
+    // IR is auto-calculated from 1.1.2017 onwards, so we don't accept it from the form
 
     await prisma.payEvent.create({
         data: {
@@ -24,7 +24,7 @@ export async function addPayEvent(formData: FormData) {
             type,
             drawnBasicPay,
             drawnGradePay,
-            drawnIR
+            drawnIR: null // Will be auto-calculated
         }
     })
 

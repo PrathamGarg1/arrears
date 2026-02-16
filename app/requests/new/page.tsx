@@ -47,11 +47,11 @@ export default async function NewRequestPage() {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">Arrear Start Date</label>
-            <input type="date" name="startDate" required className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+            <input type="date" name="startDate" required defaultValue="2016-01-01" className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Arrear End Date</label>
-            <input type="date" name="endDate" required className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+            <input type="date" name="endDate" required defaultValue="2021-06-30" className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
           </div>
         </div>
 
