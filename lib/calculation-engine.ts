@@ -176,7 +176,7 @@ export function calculateArrears(req: CalculationRequest): Segment[] {
 }
 
 // ============================================================================
-// CALCULATION COMPARISON FOR OCR VERIFICATION
+// CALCULATION COMPARISON AND VERIFICATION
 // ============================================================================
 
 export interface CalculationDiscrepancy {

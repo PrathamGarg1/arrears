@@ -51,7 +51,7 @@ export function exportToExcel(data: {
 
     // Sheet 1: Summary
     const summaryData = [
-        ['BBMB Arrear Calculation - OCR Extracted Data'],
+        ['BBMB Arrear Calculation - Extracted Data'],
         [],
         ['Employee Information'],
         ['Name', employeeName],

@@ -6,7 +6,6 @@ import { ChevronLeft } from 'lucide-react'
 import PayEventsEditor from './events-editor'
 import CalculationGrid from './calculation-grid'
 import ApprovalWorkflow from './approval-workflow'
-import ImageVerifier from './image-verifier'
 import { calculateArrears } from '@/lib/calculation-engine'
 import { RequestHeaderActions } from './header-actions'
 
@@ -115,15 +114,7 @@ export default async function RequestDetailPage({ params }: { params: { id: stri
         </div>
       </div>
 
-      {/* Image Verification Section */}
-      <div className="mt-6">
-        <ImageVerifier 
-          segments={serializedSegments}
-          totalArrear={totalArrear}
-          daRates={safeDARates}
-          requestId={id}
-        />
-      </div>
+
     </div>
   )
 }
